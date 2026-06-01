@@ -1,0 +1,20 @@
+# Dev overrides: hot-reload Python code via bind mount (no image rebuild needed).
+# Usage: docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+
+services:
+  web:
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py seed_demo_data &&
+             python manage.py runserver 0.0.0.0:8000"
+
+  celery_worker_light:
+    command: celery -A config worker -Q light -l info -c 2 --hostname=light@%h --autoreload
+
+  celery_worker_heavy:
+    command: celery -A config worker -Q heavy -l info -c 1 --hostname=heavy@%h --autoreload
+
+  celery_beat:
+    command: >
+      watchmedo auto-restart -d /app -p '*.py' -R --
+      celery -A config beat -l info

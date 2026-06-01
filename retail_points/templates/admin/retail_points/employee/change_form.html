@@ -1,0 +1,18 @@
+{% extends "admin/change_form.html" %}
+{% load i18n %}
+
+{% block submit_buttons_bottom %}
+{{ block.super }}
+{% if original.pk %}
+<div class="submit-row" style="margin-top: 8px;">
+  <form method="post" action="{% url 'admin:retail_points_employee_reset_password' original.pk %}" style="display: inline;">
+    {% csrf_token %}
+    <input type="submit" value="Сбросить пароль (новый случайный)" class="default">
+  </form>
+  <form method="post" action="{% url 'admin:retail_points_employee_rotate_api_key' original.pk %}" style="display: inline; margin-left: 8px;">
+    {% csrf_token %}
+    <input type="submit" value="Перевыпустить API-ключ" class="default">
+  </form>
+</div>
+{% endif %}
+{% endblock %}
